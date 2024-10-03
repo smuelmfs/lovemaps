@@ -7,6 +7,7 @@ import Select from "react-select"; // Adiciona o Select
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import CustomSelect from "./CustomSelect";
 
+
 // Carregar o mapa dinamicamente para evitar problemas com o SSR do Next.js
 const Map = dynamic(() => import("./map.js"), { ssr: false });
 
@@ -31,6 +32,11 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState([]);
   const [position, setPosition] = useState([-19.917, -43.934]); // Posição inicial
   const debouncedSearchInput = useDebounce(searchInput, 300); // Debounce de 300ms
+  const [formData, setFormData] = useState({
+    title: '',
+    message: '',
+    location: '',
+  });
 
   // Função para buscar os dados com base no input
   const handleSearch = async () => {
@@ -262,89 +268,133 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Formulário para buscar localização e criar o mapa */}
-      <section className="relative bg-gray-900 text-white py-24" id="forms">
-        <div className="form-map-container flex justify-around gap-8 px-8">
-          {/* Formulário */}
-          <div className="form-container w-full max-w-lg">
-            <form className="space-y-4">
-              <div>
-                <label
-                  for="first_name"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Nome do casal
-                </label>
-                <input
-                  type="text"
-                  id="first_name"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Ex: Samuel e Nathalia"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  for="LocationInput"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Localização
-                </label>
-                {/* Campo de busca */}
-                  <div className="max-w-7xl mx-auto">
-                    <div className="mb-1 w-full max-w-md bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block">
-                      <CustomSelect
-                        options={searchResults}
-                        onInputChange={setSearchInput}
-                        onChange={handleSelectAddress}
-                        placeholder="Digite um endereço"
-                      />
-                    </div>
-                  </div>
-              </div>
-              <div>
-                <label
-                  for="message"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Your message
-                </label>
-                <textarea
-                  id="message"
-                  rows="4"
-                  class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Escreva aqui sua mensagem..."
-                ></textarea>
-              </div>
-              <button
-                type="submit"
-                className="mt-4 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition"
+{/* Formulário para buscar localização e criar o mapa */}
+<section className="relative bg-gray-900 text-white py-12" id="forms">
+  <div className="form-map-container flex flex-col lg:flex-row justify-between gap-8 px-4">
+    
+    {/* Formulário */}
+    <div className="form-container w-full max-w-lg">
+      <form className="space-y-4">
+        <div>
+          <label
+            htmlFor="first_name"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Nome do casal
+          </label>
+          <input
+            type="text"
+            id="first_name"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Ex: Samuel e Nathalia"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="date_met"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Data em que se conheceram
+          </label>
+          <input
+            type="date"
+            id="date_met"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="LocationInput"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Localização
+          </label>
+          {/* Campo de busca */}
+          <div className="w-full">
+            <div className="mb-1 w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500">
+              <CustomSelect
+                options={searchResults}
+                onInputChange={setSearchInput}
+                onChange={handleSelectAddress}
+                placeholder="Digite um endereço"
+              />
+            </div>
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="message"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Sua mensagem
+          </label>
+          <textarea
+            id="message"
+            rows="3"
+            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Escreva aqui sua mensagem..."
+          ></textarea>
+        </div>
+        <button
+          type="submit"
+          className="mt-4 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition"
+        >
+          Gerar mapa personalizado
+        </button>
+      </form>
+    </div>
+
+    {/* Mapa */}
+    <div className="w-full lg:w-2/3 xl:w-1/2 h-56 lg:h-64 bg-gray-200">
+      <Map position={position} />
+    </div>
+
+    {/* Preview Section */}
+    <section id="preview" className="py-24 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-3xl font-bold text-center mb-12">
+            Pré-visualização do Mapa
+          </h3>
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-xl font-semibold">Título:</h4>
+              <p>{formData.title || "Nenhum título definido"}</p>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold">Mensagem:</h4>
+              <p>{formData.message || "Nenhuma mensagem definida"}</p>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold">Localização:</h4>
+              <p>{formData.location || "Nenhuma localização selecionada"}</p>
+            </div>
+
+            {/* Exibe o mapa com a posição selecionada */}
+            <div>
+              <MapContainer
+                center={position}
+                zoom={13}
+                scrollWheelZoom={false}
+                style={{ height: "400px", width: "100%" }}
               >
-                Gerar mapa personalizado
-              </button>
-              <br></br>
-            </form>
-          </div>
-
-          {/* Mapa */}
-          <div id="map" className="w-full h-64 bg-gray-200">
-            <Map position={position} />
-          </div>
-
-          {/* Pré-visualização do mapa */}
-          <div className="map-preview-container w-full max-w-lg">
-            <h3 className="text-xl font-bold">Pré-visualização do mapa</h3>
-            <img
-              id="mapPreview"
-              className="w-full mt-4 border border-gray-300 rounded-lg"
-              alt="Mapa Gerado"
-            />
-            <p className="mt-2">
-              URL personalizada: <span id="customURL"></span>
-            </p>
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                <Marker position={position}>
+                  <Popup>{formData.location || "Localização não definida"}</Popup>
+                </Marker>
+              </MapContainer>
+            </div>
           </div>
         </div>
       </section>
+  </div>
+</section>
+
+
 
       {/* Contact Section */}
       <section id="contact" className="py-24 bg-white">
